@@ -33,7 +33,7 @@ users:
     token: ${K8S_TOKEN}
 EOF
 
-                        kubectl get nodes
+                        kubectl get pods
                         kubectl get deployments
                     '''
                 }
