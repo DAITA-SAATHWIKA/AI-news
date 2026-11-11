@@ -15,6 +15,14 @@ pipeline {
     }
 
     stages {
+            stage('Trivy Filesystem Scan') {
+    steps {
+        sh '''
+            echo "Starting Trivy filesystem scan..."
+            trivy fs --scanners vuln,secret,misconfig --exit-code 0 .
+        '''
+    }
+}
 
         stage('Configure Kubernetes Access') {
             steps {
@@ -80,6 +88,15 @@ EOF
             }
         }
 
+        stage('Trivy Docker Image Scan') {
+            steps {
+                sh '''
+                    echo "Starting Trivy Docker image scan..."
+                    trivy image --scanners vuln --severity HIGH,CRITICAL --exit-code 0 ai-news-${TARGET_COLOR}:${BUILD_NUMBER}
+                '''
+            }
+        }
+
         stage('Import Image into Minikube') {
             steps {
                 sh '''
@@ -88,7 +105,6 @@ EOF
                 '''
             }
         }
-
         stage('Deploy and Verify') {
             steps {
                 sh '''
