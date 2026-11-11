@@ -119,7 +119,6 @@ EOF
                     kubectl get svc ai-news-service \
                     -o jsonpath='Active version: {.spec.selector.version}{"\\n"}'
 
-                    kubectl get endpoints ai-news-service
                 '''
             }
         }
