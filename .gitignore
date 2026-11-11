@@ -1,0 +1,14 @@
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.crt
+*.token
+kubeconfig
+.kube/
+.minikube/
+secrets/
+credentials/
+__pycache__/
+*.log

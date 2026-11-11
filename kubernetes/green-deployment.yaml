@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ai-news-green
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: ai-news
+      version: green
+  template:
+    metadata:
+      labels:
+        app: ai-news
+        version: green
+    spec:
+      containers:
+        - name: ai-news
+          image: ai-news-green:v1
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 80
