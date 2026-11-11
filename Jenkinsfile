@@ -138,10 +138,57 @@ EOF
                 '''
             }
         }
-    }
+
+
+        stage('OWASP ZAP Baseline Scan') {
+            steps {
+                sh '''
+                    set -e
+
+                    mkdir -p "$WORKSPACE/zap-reports"
+
+                    echo "Starting application port-forward..."
+
+                    kubectl port-forward --address 127.0.0.1 \
+                    svc/ai-news-service 18081:80 \
+                    > "$WORKSPACE/zap-port-forward.log" 2>&1 &
+
+                    PF_PID=$!
+                    trap 'kill $PF_PID 2>/dev/null || true' EXIT
+
+                    echo "Waiting for application..."
+
+                    READY=0
+                    for i in $(seq 1 30); do
+                        if curl -fsS http://127.0.0.1:18081/ > /dev/null; then
+                            READY=1
+                            break
+                        fi
+                        sleep 2
+                    done
+
+                    if [ "$READY" -ne 1 ]; then
+                        cat "$WORKSPACE/zap-port-forward.log"
+                        exit 1
+                    fi
+
+                    echo "Starting OWASP ZAP Baseline Scan..."
+
+                    docker run --rm --network host \
+                    -v "$WORKSPACE/zap-reports:/zap/wrk/:rw" \
+                    ghcr.io/zaproxy/zaproxy:stable \
+                    zap-baseline.py \
+                    -t http://127.0.0.1:18081 \
+                    -r zap-report.html -I
+                '''
+            }
+        }
+}
 
     post {
+
         always {
+            archiveArtifacts artifacts: 'zap-reports/zap-report.html', allowEmptyArchive: true
             sh 'rm -f "$KUBECONFIG"'
         }
     }
