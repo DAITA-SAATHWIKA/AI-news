@@ -2,11 +2,10 @@
 
 body {
     font-family: Arial, sans-serif;
-    background: #d1fae5;
+    background: #39FF14;
     color: #064e3b;
     min-height: 100vh;
 }
-
 header {
     padding: 25px 8%;
     display: flex;
