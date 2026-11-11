@@ -24,6 +24,25 @@ pipeline {
     }
 }
 
+        stage('SonarQube Code Analysis') {
+            steps {
+                script {
+                    def scannerHome = tool 'SonarScanner'
+
+                    withSonarQubeEnv('SonarQube') {
+                        sh """
+                            ${scannerHome}/bin/sonar-scanner \
+                            -Dsonar.projectKey=ai-news-generator \
+                            -Dsonar.projectName='AI News Generator' \
+                            -Dsonar.sources=app \
+                            -Dsonar.sourceEncoding=UTF-8
+                        """
+                    }
+                }
+            }
+        }
+
+
         stage('Configure Kubernetes Access') {
             steps {
                 withCredentials([
