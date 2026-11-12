@@ -12,3 +12,17 @@ secrets/
 credentials/
 __pycache__/
 *.log
+
+# Terraform
+**/.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+*.tfvars.json
+crash.log
+override.tf
+override.tf.json
+
+# Server-specific configuration
+ansible/inventory.ini
+monitoring/alertmanager/alertmanager.yml

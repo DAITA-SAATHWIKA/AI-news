@@ -1,0 +1,25 @@
+---
+- name: Prepare Infrastructure Server
+  hosts: monitoring
+  become: yes
+
+  tasks:
+    - name: Update apt packages
+      apt:
+        update_cache: yes
+
+    - name: Install required packages
+      apt:
+        name:
+          - docker.io
+          - docker-compose-v2
+          - curl
+          - wget
+          - git
+        state: present
+
+    - name: Start Docker
+      service:
+        name: docker
+        state: started
+        enabled: yes

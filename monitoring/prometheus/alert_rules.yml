@@ -1,0 +1,38 @@
+groups:
+  - name: server-alerts
+    rules:
+      - alert: HighCPUUsage
+        expr: 100 - (avg by(instance) (rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 80
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: High CPU usage detected
+          description: CPU usage is above 80% for 2 minutes.
+
+      - alert: HighMemoryUsage
+        expr: 100 * (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) > 80
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: High memory usage detected
+          description: Memory usage is above 80% for 2 minutes.
+
+      - alert: InstanceDown
+        expr: up{job=~"node-exporter|cicd-server"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: Node Exporter is unavailable
+          description: Prometheus cannot scrape Node Exporter.
+
+      - alert: HighDiskUsage
+        expr: 100 * (1 - (node_filesystem_avail_bytes{mountpoint="/", fstype!="rootfs"} / node_filesystem_size_bytes{mountpoint="/", fstype!="rootfs"})) > 80
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: High disk usage detected
+          description: Disk usage is above 80% on {{ $labels.instance }}.
